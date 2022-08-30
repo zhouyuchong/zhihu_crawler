@@ -1,29 +1,39 @@
 from gevent import monkey
 monkey.patch_all()
+import sys
 from zhihu_crawler import *
+import requests
+# from zhihu_crawler.zhihu_scraper import *
+
+# def get_proxy():
+#     """
+#     获取代理
+#     """
+#     proxy_meta = {}
+#     # 代理服务器
+#     proxy_host = "http-dyn.abuyun.com"
+#     proxy_port = "9020"
+#     # 代理隧道验证信息
+#     proxy_user = "H4761267I6DC816D"
+#     proxy_pass = "ED09104BE93C5DC3"
+#     proxy_meta = "http://%(user)s:%(pass)s@%(host)s:%(port)s" % {
+#         "host": proxy_host,
+#         "port": proxy_port,
+#         "user": proxy_user,
+#         "pass": proxy_pass,
+#     }
+    # return {'http': proxy_meta, 'https': proxy_meta}
 
 
 def get_proxy():
-    """
-    获取代理
-    """
-    proxy_meta = {}
-    # 代理服务器
-    proxy_host = "http-dyn.abuyun.com"
-    proxy_port = "9020"
-    # 代理隧道验证信息
-    proxy_user = "H4761267I6DC816D"
-    proxy_pass = "ED09104BE93C5DC3"
-    proxy_meta = "http://%(user)s:%(pass)s@%(host)s:%(port)s" % {
-        "host": proxy_host,
-        "port": proxy_port,
-        "user": proxy_user,
-        "pass": proxy_pass,
-    }
-    return {'http': proxy_meta, 'https': proxy_meta}
+    return requests.get("http://127.0.0.1:5010/get/").json()
 
+def delete_proxy(proxy):
+    requests.get("http://127.0.0.1:5010/delete/?proxy={}".format(proxy))
 
 if __name__ == '__main__':
+    proxy = get_proxy().get("proxy")
+    proxies = {'http': 'http://{}'.format(proxy), 'https': 'http://{}'.format(proxy)}
     set_proxy(get_proxy())
     set_cookie({'d_c0': 'AvAQDHN4mxSPTtVyJn9kQSMi43V1kPWH_qc=|1646810832'})
     for info in search_crawler(key_word='滴普', nums=3, agree_users=True):
